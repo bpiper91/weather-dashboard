@@ -1,0 +1,41 @@
+body {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    color: #333333;
+}
+
+/* HEADER STYLING */
+header {
+    text-align: center;
+    background-color: darkblue;
+    color: white;
+    margin-bottom: 12px;
+}
+
+header h1 {
+    font-weight: bold;
+    padding: 12px 20px;
+}
+
+/* SEARCH SECTION STYLING */
+.search {
+
+}
+
+.search input {
+    padding: 6px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+.search button {
+    color: white;
+    background: darkblue;
+    padding: 6px 12px;
+    border-radius: 3px;
+    border: none;
+}
+
+/* RESULTS SECTION STYLING */
+.results {
+
+}
