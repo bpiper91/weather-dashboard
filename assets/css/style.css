@@ -33,6 +33,11 @@ header h1 {
     padding: 6px 12px;
     border-radius: 3px;
     border: none;
+    margin-bottom: 12px;
+}
+
+.saved-cities {
+    border-top: 2px solid #333333;
 }
 
 /* RESULTS SECTION STYLING */

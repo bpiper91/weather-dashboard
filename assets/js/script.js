@@ -41,7 +41,22 @@ var getWeather = function(cityName) {
 
     // pull list of previously searched cities from local storage
     if (localStorage.getItem("savedCities")) {
+        // get array of searched cities
         savedCities = JSON.parse(localStorage.getItem("savedCities"));
+
+        if (savedCities.length > 0) {
+            // create div to list results
+            var savedCitiesDiv = document.createElement("div");
+            savedCitiesDiv.setAttribute("class","saved-cities");
+            document.querySelector(".search").appendChild(savedCitiesDiv);
+
+            // add each saved city to list below search button
+            for (i=0; i < savedCities.length; i++) {
+                var newDiv = document.createElement("div");
+                newDiv.textContent = savedCities[i];
+                document.querySelector(".saved-cities").appendChild(newDiv);
+            };
+        };
     };
 };
 
