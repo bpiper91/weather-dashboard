@@ -42,6 +42,9 @@ var searchButtonHandler = function (event) {
                         // store city in recent search terms
                         storeCity(cityObject);
 
+                        // get new list of search terms
+                        getSavedCities();
+
                         // get the weather for the searched city
                         getWeather(cityObject);
                     });
@@ -170,7 +173,7 @@ var getWeather = function (cityObject) {
                     for (i = 0; i < 5; i++) {
                         // create weather block
                         var weatherBlock = document.createElement("div");
-                        weatherBlock.setAttribute("class", "col-12 col-md-4 weather-block");
+                        weatherBlock.setAttribute("class", "col-md-5 col-lg-3 col-xl-2 weather-block");
                         futureWeatherDiv.appendChild(weatherBlock);
 
                         // create date heading
@@ -194,24 +197,44 @@ var getWeather = function (cityObject) {
 
                         // add current temperature
                         var futureTempPara = document.createElement("p");
-                        futureTempPara.innerHTML = "Temperature: " + data.daily[i].temp.day + " &deg;F";
+                        futureTempPara.innerHTML = "Temperature: " + data.daily[i].temp.day + "&nbsp;&deg;F";
                         weatherBlock.appendChild(futureTempPara);
 
                         // add current wind speed
                         var futureWindPara = document.createElement("p");
-                        futureWindPara.textContent = "Wind: " + data.daily[i].wind_speed + " MPH";
+                        futureWindPara.innerHTML = "Wind: " + data.daily[i].wind_speed + "&nbsp;MPH";
                         weatherBlock.appendChild(futureWindPara);
 
                         // add current humidity
                         var futureHumidPara = document.createElement("p");
                         futureHumidPara.textContent = "Humidity: " + data.daily[i].humidity + "%";
                         weatherBlock.appendChild(futureHumidPara);
+
+                        // add listener for clicking on recent search term
+                        document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
                     };
                 });
             } else {
                 alert("bad response to weather data API call")
             }
         });
+};
+
+var savedCitiesHandler = function(event) {
+    if (event.target.className !== "btn") {
+        // if the div was clicked but not a button, do nothing
+        console.log("didn't click a button");
+        return false;
+    } else {
+        // otherwise, get city name and coordinates for city object
+        var cityName = event.target.textContent;
+        var latitude = event.target.dataset.lat;
+        var longitude = event.target.dataset.lon;
+
+        // create city object and call getWeather
+        var cityObject = {city: cityName, lat: latitude, lon: longitude};
+        getWeather(cityObject);
+    }
 };
 
 // create clickable list of recent searches
@@ -241,6 +264,9 @@ var getSavedCities = function () {
                 newButton.textContent = savedCities[i].city;
                 newButton.setAttribute("class", "btn");
                 newButton.setAttribute("type", "button");
+                // set data atrributes with coordinates for API call
+                newButton.setAttribute("data-lat", savedCities[i].lat);
+                newButton.setAttribute("data-lon", savedCities[i].lon);
                 // add to saved cities div
                 document.querySelector(".saved-cities").appendChild(newButton);
             };
@@ -254,6 +280,9 @@ getSavedCities();
 
 // listen for search button click
 searchButton.addEventListener("click", searchButtonHandler);
+
+// add listener for clicking on recent search term
+document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
 
 
 // TO-DO:
