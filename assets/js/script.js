@@ -5,9 +5,9 @@ var resultsDiv = document.querySelector(".results");
 
 // API VARIABLES
 var apiKey = "2fe97bca221f6d95d8bfe21d3f54bbb1";
-var directGeocodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=";
+var directGeocodeUrl = "https://api.openweathermap.org/geo/1.0/direct?q=";
 var weatherApiCall = "https://api.openweathermap.org/data/2.5/onecall?";
-var weatherIconUrl = "http://openweathermap.org/img/wn/"
+var weatherIconUrl = "https://openweathermap.org/img/wn/"
 
 // FUNCTIONS
 // handle search button clicks
