@@ -1,11 +1,13 @@
 // DOM ELEMENT SELECTOR VARIABLES
 var searchButton = document.querySelector("#submit");
 var inputElement = document.querySelector("#city-search");
+var resultsDiv = document.querySelector(".results");
 
 // API VARIABLES
 var apiKey = "2fe97bca221f6d95d8bfe21d3f54bbb1";
 var directGeocodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=";
 var weatherApiCall = "https://api.openweathermap.org/data/2.5/onecall?";
+var weatherIconUrl = "http://openweathermap.org/img/wn/"
 // var apiSuffix = "&limit=1&appid=" + apiKey
 
 // FUNCTIONS
@@ -29,6 +31,7 @@ var searchButtonHandler = function (event) {
                     // if response is good, pull data needed for weather request
                     response.json().then(function (data) {
                         // get latitude and longitude of city
+                        cityName = data[0].name;
                         var latitude = data[0].lat;
                         var longitude = data[0].lon;
 
@@ -60,7 +63,6 @@ var storeCity = function (cityObject) {
         // if the current city is already in the list, run get the weather
         for (i = 0; i < savedCities.length; i++) {
             if (cityObject.city.toLowerCase() === savedCities[i].city.toLowerCase()) {
-                getWeather(cityObject);
                 return false;
             };
         };
@@ -77,13 +79,75 @@ var storeCity = function (cityObject) {
 // look up weather in searched city
 var getWeather = function (cityObject) {
     // get weather data for city
-    fetch(weatherApiCall + "lat=" + cityObject.lat + "&lon=" + cityObject.lon + "&appid=" + apiKey)
+    fetch(weatherApiCall + "lat=" + cityObject.lat + "&lon=" + cityObject.lon + "&units=imperial&appid=" + apiKey)
         .then(function (response) {
             if (response.ok) {
                 // if response is good, pull weather data
                 response.json().then(function (data) {
 
                     console.log(data);
+                    // create current weather div and add to results section
+                    var currentWeatherDiv = document.createElement("div");
+                    currentWeatherDiv.setAttribute("class","current");
+                    currentWeatherDiv.setAttribute("id","current");
+                    resultsDiv.appendChild(currentWeatherDiv);
+
+                    // create heading
+                    var cityHeading = document.createElement("h2");
+                    // parse date (10 digits: seconds since 1/1/1970)
+                    var dateUTC = data.current.dt;
+                    console.log("dateUTC = " + dateUTC);
+                    var date = new Date(dateUTC * 1000);
+                    console.log("date = " + date);
+                    var month = parseInt(date.getMonth()) + 1;
+                    var day = date.getDate();
+                    var year = date.getFullYear();
+                    cityHeading.textContent = cityObject.city + " (" + month + "/" + day + "/" + year + ")";
+                    // append heading
+                    currentWeatherDiv.appendChild(cityHeading);
+
+                    // create icon
+                    var iconImg = document.createElement("img");
+                    iconImg.setAttribute("src", weatherIconUrl + data.current.weather[0].icon +"@2x.png");
+                    iconImg.setAttribute("alt", data.current.weather[0].description);
+                    iconImg.setAttribute("class", "current-icon");
+                    currentWeatherDiv.appendChild(iconImg);
+
+                    // add current temperature
+                    var tempPara = document.createElement("p");
+                    tempPara.innerHTML = "Temperature: " + data.current.temp + " &deg;F";
+                    currentWeatherDiv.appendChild(tempPara);
+
+                    // add current wind speed
+                    var windPara = document.createElement("p");
+                    windPara.textContent = "Wind: " + data.current.wind_speed + " MPH";
+                    currentWeatherDiv.appendChild(windPara);
+
+                    // add current humidity
+                    var humidPara = document.createElement("p");
+                    humidPara.textContent = "Humidity: " + data.current.humidity + "%";
+                    currentWeatherDiv.appendChild(humidPara);
+
+                    // add current UV index
+                    var uvPara = document.createElement("p");
+                    // determine UV index rating from data
+                    if (data.current.uvi < 3) {
+                        var uvRating = "favorable";
+                    } else if (data.current.uvi < 6) {
+                        var uvRating = "moderate";
+                    } else {
+                        var uvRating = "severe";
+                    };
+                    // style UV index based on rating
+                    uvPara.innerHTML = "UV Index: <span class=" + uvRating + ">" + data.current.uvi + "</span>";
+                    currentWeatherDiv.appendChild(uvPara);
+
+
+
+
+
+
+
 
 
 
