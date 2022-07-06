@@ -274,12 +274,18 @@ var getSavedCities = function () {
     };
 };
 
+var checkSavedCities = function() {
+    // add listener for clicking on recent search term
+    if (document.querySelector("#saved-cities")) {
+        document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
+    };
+};
+
 // INITIAL FUNCTION CALLS
 // load any recently searched cities
 getSavedCities();
+checkSavedCities();
 
 // listen for search button click
 searchButton.addEventListener("click", searchButtonHandler);
 
-// add listener for clicking on recent search term
-document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
