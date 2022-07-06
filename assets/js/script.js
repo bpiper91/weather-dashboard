@@ -86,10 +86,22 @@ var getWeather = function (cityObject) {
                 response.json().then(function (data) {
 
                     console.log(data);
+
+                    // if there's already weather displayed, remove it
+                    if (document.querySelector("#current")) {
+                        document.querySelector("#current").remove();
+                    };
+                    if (document.querySelector("#five-day")) {
+                        document.querySelector("#five-day").remove();
+                    }
+                    if (document.querySelector("#future")) {
+                        document.querySelector("#future").remove();
+                    };
+
                     // create current weather div and add to results section
                     var currentWeatherDiv = document.createElement("div");
-                    currentWeatherDiv.setAttribute("class","current");
-                    currentWeatherDiv.setAttribute("id","current");
+                    currentWeatherDiv.setAttribute("class", "current");
+                    currentWeatherDiv.setAttribute("id", "current");
                     resultsDiv.appendChild(currentWeatherDiv);
 
                     // create heading
@@ -108,7 +120,7 @@ var getWeather = function (cityObject) {
 
                     // create icon
                     var iconImg = document.createElement("img");
-                    iconImg.setAttribute("src", weatherIconUrl + data.current.weather[0].icon +"@2x.png");
+                    iconImg.setAttribute("src", weatherIconUrl + data.current.weather[0].icon + "@2x.png");
                     iconImg.setAttribute("alt", data.current.weather[0].description);
                     iconImg.setAttribute("class", "current-icon");
                     currentWeatherDiv.appendChild(iconImg);
@@ -142,23 +154,59 @@ var getWeather = function (cityObject) {
                     uvPara.innerHTML = "UV Index: <span class=" + uvRating + ">" + data.current.uvi + "</span>";
                     currentWeatherDiv.appendChild(uvPara);
 
+                    // add heading
+                    var fiveDayHeading = document.createElement("h3");
+                    fiveDayHeading.setAttribute("id","five-day");
+                    fiveDayHeading.textContent = "5-Day Forecast";
+                    resultsDiv.appendChild(fiveDayHeading);
 
+                    // create future weather div and add to results section
+                    var futureWeatherDiv = document.createElement("div");
+                    futureWeatherDiv.setAttribute("class", "row future");
+                    futureWeatherDiv.setAttribute("id", "future");
+                    resultsDiv.appendChild(futureWeatherDiv);
 
+                    // add weather for next 5 days
+                    for (i = 0; i < 5; i++) {
+                        // create weather block
+                        var weatherBlock = document.createElement("div");
+                        weatherBlock.setAttribute("class", "col-12 col-md-4 weather-block");
+                        futureWeatherDiv.appendChild(weatherBlock);
 
+                        // create date heading
+                        var dateHeading = document.createElement("h4");
+                        // parse date (10 digits: seconds since 1/1/1970)
+                        var dateUTC = data.daily[i].dt;
+                        var date = new Date(dateUTC * 1000);
+                        var month = parseInt(date.getMonth()) + 1;
+                        var day = date.getDate();
+                        var year = date.getFullYear();
+                        dateHeading.textContent = month + "/" + day + "/" + year;
+                        // add date heading to block
+                        weatherBlock.appendChild(dateHeading);
 
+                        // create icon and add to block
+                        var futureIconImg = document.createElement("img");
+                        futureIconImg.setAttribute("src", weatherIconUrl + data.daily[i].weather[0].icon + ".png");
+                        futureIconImg.setAttribute("alt", data.daily[i].weather[0].description);
+                        futureIconImg.setAttribute("class", "future-icon");
+                        weatherBlock.appendChild(futureIconImg);
 
+                        // add current temperature
+                        var futureTempPara = document.createElement("p");
+                        futureTempPara.innerHTML = "Temperature: " + data.daily[i].temp.day + " &deg;F";
+                        weatherBlock.appendChild(futureTempPara);
 
+                        // add current wind speed
+                        var futureWindPara = document.createElement("p");
+                        futureWindPara.textContent = "Wind: " + data.daily[i].wind_speed + " MPH";
+                        weatherBlock.appendChild(futureWindPara);
 
-
-
-
-
-
-
-
-
-
-
+                        // add current humidity
+                        var futureHumidPara = document.createElement("p");
+                        futureHumidPara.textContent = "Humidity: " + data.daily[i].humidity + "%";
+                        weatherBlock.appendChild(futureHumidPara);
+                    };
                 });
             } else {
                 alert("bad response to weather data API call")

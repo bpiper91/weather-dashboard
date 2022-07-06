@@ -74,3 +74,10 @@ header h1 {
 .severe {
     background-color: darkred;
 }
+
+.weather-block {
+    background-color: darkblue;
+    color: white;
+    padding: 16px 24px 0 24px;
+    margin: 12px;
+}
