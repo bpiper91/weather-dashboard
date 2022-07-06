@@ -8,7 +8,6 @@ var apiKey = "2fe97bca221f6d95d8bfe21d3f54bbb1";
 var directGeocodeUrl = "http://api.openweathermap.org/geo/1.0/direct?q=";
 var weatherApiCall = "https://api.openweathermap.org/data/2.5/onecall?";
 var weatherIconUrl = "http://openweathermap.org/img/wn/"
-// var apiSuffix = "&limit=1&appid=" + apiKey
 
 // FUNCTIONS
 // handle search button clicks
@@ -37,7 +36,6 @@ var searchButtonHandler = function (event) {
 
                         // create object to store city info
                         var cityObject = { city: cityName, lat: latitude, lon: longitude };
-                        console.log(cityObject);
 
                         // store city in recent search terms
                         storeCity(cityObject);
@@ -50,8 +48,11 @@ var searchButtonHandler = function (event) {
                     });
                 } else {
                     // if response is bad, alert user
-                    alert("bad response to geocoding API call");
+                    alert("City not found. Please try again using a different search term.");
                 };
+            })
+            .catch(function (error) {
+                    alert("Unable to connect to OpenWeather. Please try again later.");
             });
     };
 };
@@ -88,8 +89,6 @@ var getWeather = function (cityObject) {
                 // if response is good, pull weather data
                 response.json().then(function (data) {
 
-                    console.log(data);
-
                     // if there's already weather displayed, remove it
                     if (document.querySelector("#current")) {
                         document.querySelector("#current").remove();
@@ -111,9 +110,7 @@ var getWeather = function (cityObject) {
                     var cityHeading = document.createElement("h2");
                     // parse date (10 digits: seconds since 1/1/1970)
                     var dateUTC = data.current.dt;
-                    console.log("dateUTC = " + dateUTC);
                     var date = new Date(dateUTC * 1000);
-                    console.log("date = " + date);
                     var month = parseInt(date.getMonth()) + 1;
                     var day = date.getDate();
                     var year = date.getFullYear();
@@ -173,7 +170,7 @@ var getWeather = function (cityObject) {
                     for (i = 0; i < 5; i++) {
                         // create weather block
                         var weatherBlock = document.createElement("div");
-                        weatherBlock.setAttribute("class", "col-md-5 col-lg-3 col-xl-2 weather-block");
+                        weatherBlock.setAttribute("class", "col-sm-5 col-lg-3 col-xl-2 weather-block");
                         futureWeatherDiv.appendChild(weatherBlock);
 
                         // create date heading
@@ -183,7 +180,7 @@ var getWeather = function (cityObject) {
                         var date = new Date(dateUTC * 1000);
                         var month = parseInt(date.getMonth()) + 1;
                         var day = date.getDate();
-                        var year = date.getFullYear();
+                        var year = date.getFullYear().toString().substr(2, 2);
                         dateHeading.textContent = month + "/" + day + "/" + year;
                         // add date heading to block
                         weatherBlock.appendChild(dateHeading);
@@ -215,15 +212,18 @@ var getWeather = function (cityObject) {
                     };
                 });
             } else {
-                alert("bad response to weather data API call")
+                alert("Could not find weather data for selected city. Please try your search again.");
             }
+        })
+        .catch(function(error) {
+            alert("Could not reach OpenWeather. Please try your search again later.");
         });
 };
 
+// when a recent search term is clicked, get data to make API call
 var savedCitiesHandler = function(event) {
     if (event.target.className !== "btn") {
         // if the div was clicked but not a button, do nothing
-        console.log("didn't click a button");
         return false;
     } else {
         // otherwise, get city name and coordinates for city object
@@ -274,7 +274,7 @@ var getSavedCities = function () {
     };
 };
 
-// FUNCTION CALLS
+// INITIAL FUNCTION CALLS
 // load any recently searched cities
 getSavedCities();
 
@@ -283,10 +283,3 @@ searchButton.addEventListener("click", searchButtonHandler);
 
 // add listener for clicking on recent search term
 document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
-
-
-// TO-DO:
-// - add links to saved city buttons in getSavedCities
-// - add hover/active?/focus? style to search button
-// - add else action for unfilfilled promise
-// - add disambiguation for common city names?

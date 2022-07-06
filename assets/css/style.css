@@ -1,30 +1,32 @@
 body {
     font-family: Roboto, Arial, Helvetica, sans-serif;
     color: #333333;
+    padding-bottom: 40px;
 }
 
 /* HEADER STYLING */
 header {
     text-align: center;
-    background-color: darkblue;
+    background-color: #090979;
+    background: linear-gradient(63deg, rgba(0,84,213,1) 0%, rgba(9,9,121,1) 55%, rgba(2,0,46,1) 100%);
     color: white;
     margin-bottom: 12px;
 }
 
 header h1 {
     font-weight: bold;
-    padding: 12px 20px;
+    padding: 14px 20px;
 }
 
 /* SEARCH SECTION STYLING */
-.search {
-    
-}
 
 .search-form {
     border-bottom: 1px solid #666666;
-    margin-bottom: 6px;
 }
+
+.search-form h3 {
+    margin-top: 50px;
+  }
 
 .search input {
     padding: 6px;
@@ -32,30 +34,46 @@ header h1 {
 }
 
 .btn {
-    background: lightslategray;
+    background: rgb(183, 196, 209);
     padding: 6px 12px;
     border-radius: 3px;
     border: none;
     margin: 6px;
 }
 
+.btn:hover {
+    background: rgba(155,193,251,1);
+}
+
 .search-form button {
     color: white;
-    background: darkblue;
+    background: rgba(4,53,175,1);
     margin: 12px 0px;
+    width: 100%;
+}
+
+.search-form button:hover {
+    background: rgba(9,9,121,1);
+    color: white;
 }
 
 .saved-cities {
-    
+    padding-top: 6px;
 }
 
-.city-btn {
-
+.saved-cities button {
+    margin: 6px 12px 6px 0;
 }
 
 /* RESULTS SECTION STYLING */
-.results {
-    
+.current {
+    padding: 18px 30px 6px 30px;
+    margin-top: 20px;
+    border-radius: 10px;
+    color: white;
+    /*border: 1px solid #666666;*/
+    background-color: #090979;
+    background: linear-gradient(63deg, rgba(4,53,175,1) 0%, rgba(9,9,121,1) 55%, rgba(5,3,74,1) 100%);
 }
 
 .favorable, .moderate, .severe {
@@ -68,16 +86,38 @@ header h1 {
 }
 
 .moderate {
-    background-color: darkorange;
+    background-color: rgb(223, 122, 0);
 }
 
 .severe {
     background-color: darkred;
 }
 
+#five-day {
+    margin-top: 30px;
+}
+
 .weather-block {
-    background-color: darkblue;
+    background-color: #090979;
+    background: linear-gradient(63deg, rgba(4,53,175,1) 0%, rgba(9,9,121,1) 55%, rgba(5,3,74,1) 100%);
     color: white;
     padding: 16px 24px 0 24px;
     margin: 12px;
+    border-radius: 10px;
+    border: none;
 }
+
+/* MEDIA QUERIES */
+@media screen and (max-width: 767px) {
+    .search-form h3 {
+      margin-top: 12px;
+    }
+
+    .current {
+        margin-top: 40px;
+    }
+
+    #five-day {
+        margin-top: 40px;
+    }
+  }
