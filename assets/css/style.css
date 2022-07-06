@@ -18,26 +18,43 @@ header h1 {
 
 /* SEARCH SECTION STYLING */
 .search {
+    
+}
 
+h2 {
+    font-size: 1.5rem;
+}
+
+.search-form {
+    border-bottom: 1px solid #666666;
+    margin-bottom: 6px;
 }
 
 .search input {
     padding: 6px;
-    margin-top: 6px;
-    margin-bottom: 6px;
+    width: 100%;
 }
 
-.search button {
-    color: white;
-    background: darkblue;
+.btn {
+    background: lightslategray;
     padding: 6px 12px;
     border-radius: 3px;
     border: none;
-    margin-bottom: 12px;
+    margin: 6px;
+}
+
+.search-form button {
+    color: white;
+    background: darkblue;
+    margin: 12px 0px;
 }
 
 .saved-cities {
-    border-top: 2px solid #333333;
+    
+}
+
+.city-btn {
+
 }
 
 /* RESULTS SECTION STYLING */
