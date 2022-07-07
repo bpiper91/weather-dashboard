@@ -24,27 +24,77 @@ var searchButtonHandler = function (event) {
         return false;
     } else {
         // get latitude and longitude based on city name
-        fetch(directGeocodeUrl + cityName + "&limit=1&appid=" + apiKey)
+        fetch(directGeocodeUrl + cityName + "&limit=10&appid=" + apiKey)
             .then(function (response) {
                 if (response.ok) {
                     // if response is good, pull data needed for weather request
                     response.json().then(function (data) {
-                        // get latitude and longitude of city
-                        cityName = data[0].name;
-                        var latitude = data[0].lat;
-                        var longitude = data[0].lon;
+                        console.log(data);
+                        if (data.length > 1) {
+                            // alert user to multiple cities with that name and prompt to choose
+                            var promptText = "Your search returned multiple cities. Please enter a number to choose from the following country codes.\n"
 
-                        // create object to store city info
-                        var cityObject = { city: cityName, lat: latitude, lon: longitude };
+                            // create prompt options
+                            for (i = 0; i < data.length; i++) {
+                                    promptText = promptText + "\n" + (i + 1) + " - " + data[i].country + "-" + data[i].state;
+                            };
 
-                        // store city in recent search terms
-                        storeCity(cityObject);
+                            var selectedIndex = prompt(promptText, "enter a number 1 - " + data.length) - 1;
+                            // valideate response
+                            if (selectedIndex < 0 || selectedIndex > data.length) {
+                                alert("That is not one of the choices. Please try your search again.");
+                                return false;
+                            } else if (!Number.isInteger(selectedIndex)) {
+                                alert("That is not one of the choices. Please try your search again.");
+                            } else {
+                            // get latitude and longitude of city using selected index
+                            cityName = data[selectedIndex].name;
+                            var latitude = data[selectedIndex].lat;
+                            var longitude = data[selectedIndex].lon;
+                            // get country and state
+                            var countryCode = data[selectedIndex].country;
+                            var stateCode = data[selectedIndex].state;
 
-                        // get new list of search terms
-                        getSavedCities();
+                             // create object to store city info
+                            var cityObject = {  city: cityName,
+                                                lat: latitude,
+                                                lon: longitude,
+                                                country: countryCode,
+                                                state: stateCode };
+                            };
 
-                        // get the weather for the searched city
-                        getWeather(cityObject);
+                            // store city in recent search terms
+                            storeCity(cityObject);
+
+                            // get new list of search terms
+                            getSavedCities();
+
+                            // get the weather for the searched city
+                            getWeather(cityObject);
+
+                        } else if (data.length === 1) {
+                            // get latitude and longitude of city
+                            cityName = data[0].name;
+                            var latitude = data[0].lat;
+                            var longitude = data[0].lon;
+
+                            // create object to store city info
+                                // no country info needed
+                            var cityObject = {  city: cityName,
+                                                lat: latitude,
+                                                lon: longitude, };
+
+                            // store city in recent search terms
+                            storeCity(cityObject);
+
+                            // get new list of search terms
+                            getSavedCities();
+
+                            // get the weather for the searched city
+                            getWeather(cityObject);
+                        } else {
+                            alert("City not found. Please try again using a different search term.");
+                        };
                     });
                 } else {
                     // if response is bad, alert user
@@ -52,7 +102,7 @@ var searchButtonHandler = function (event) {
                 };
             })
             .catch(function (error) {
-                    alert("Unable to connect to OpenWeather. Please try again later.");
+                alert("Unable to connect to OpenWeather. Please check your connection or try again later.");
             });
     };
 };
@@ -64,9 +114,11 @@ var storeCity = function (cityObject) {
         // if there are saved cities, get the list
         savedCities = JSON.parse(localStorage.getItem("savedCities"));
 
-        // if the current city is already in the list, run get the weather
+        // if the current city is already in the list, just get the weather
         for (i = 0; i < savedCities.length; i++) {
-            if (cityObject.city.toLowerCase() === savedCities[i].city.toLowerCase()) {
+            console.log("searched state: " + cityObject.state);
+            console.log("saved state: " + savedCities[i].state);
+            if (cityObject.city === savedCities[i].city && cityObject.state === savedCities[i].state) {
                 return false;
             };
         };
@@ -156,7 +208,7 @@ var getWeather = function (cityObject) {
 
                     // add heading
                     var fiveDayHeading = document.createElement("h3");
-                    fiveDayHeading.setAttribute("id","five-day");
+                    fiveDayHeading.setAttribute("id", "five-day");
                     fiveDayHeading.textContent = "5-Day Forecast";
                     resultsDiv.appendChild(fiveDayHeading);
 
@@ -208,20 +260,20 @@ var getWeather = function (cityObject) {
                         weatherBlock.appendChild(futureHumidPara);
 
                         // add listener for clicking on recent search term
-                        document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
+                        document.querySelector("#saved-cities").addEventListener("click", savedCitiesHandler);
                     };
                 });
             } else {
                 alert("Could not find weather data for selected city. Please try your search again.");
             }
         })
-        .catch(function(error) {
+        .catch(function (error) {
             alert("Could not reach OpenWeather. Please try your search again later.");
         });
 };
 
 // when a recent search term is clicked, get data to make API call
-var savedCitiesHandler = function(event) {
+var savedCitiesHandler = function (event) {
     if (event.target.className !== "btn") {
         // if the div was clicked but not a button, do nothing
         return false;
@@ -232,7 +284,7 @@ var savedCitiesHandler = function(event) {
         var longitude = event.target.dataset.lon;
 
         // create city object and call getWeather
-        var cityObject = {city: cityName, lat: latitude, lon: longitude};
+        var cityObject = { city: cityName, lat: latitude, lon: longitude };
         getWeather(cityObject);
     }
 };
@@ -252,6 +304,42 @@ var getSavedCities = function () {
         // check to see if there are recent search terms
         if (savedCities.length > 0) {
 
+            // check for duplicate names and append state if needed
+            var duplicateNames = [];
+            // check each array item against each other array item to find duplicates, then save index numbers of duplicates to array
+            for (i = 0; i < savedCities.length - 1; i++) {
+                for (j = i + 1; j < savedCities.length; j++) {
+                    if (savedCities[i].city === savedCities[j].city) {
+                        if (!duplicateNames.includes(i)) {
+                            duplicateNames.push(i);
+                        };
+                        if (!duplicateNames.includes(j)) {
+                        duplicateNames.push(j);
+                        };
+                    };
+                };
+            };
+
+            // populate saved cities display object
+            var savedCitiesToDisplay = []
+            for (i = 0; i < savedCities.length; i++) {
+                if (duplicateNames.includes(i)) {
+                    tempObject = {
+                        city: savedCities[i].city + ", " + savedCities[i].state,
+                        lat: savedCities[i].lat,
+                        lon: savedCities[i].lon,
+                        country: savedCities[i].country,
+                        state: savedCities[i].state
+                    };
+                
+                
+                    // add object to display array
+                    savedCitiesToDisplay.push(tempObject);
+                } else {
+                    savedCitiesToDisplay.push(savedCities[i]);
+                };
+            };
+
             // create div to list results
             var savedCitiesDiv = document.createElement("div");
             savedCitiesDiv.setAttribute("class", "saved-cities");
@@ -259,14 +347,14 @@ var getSavedCities = function () {
             document.querySelector(".search").appendChild(savedCitiesDiv);
 
             // add each saved city to list below search button
-            for (i = 0; i < savedCities.length; i++) {
+            for (i = 0; i < savedCitiesToDisplay.length; i++) {
                 var newButton = document.createElement("button");
-                newButton.textContent = savedCities[i].city;
+                newButton.textContent = savedCitiesToDisplay[i].city;
                 newButton.setAttribute("class", "btn");
                 newButton.setAttribute("type", "button");
                 // set data atrributes with coordinates for API call
-                newButton.setAttribute("data-lat", savedCities[i].lat);
-                newButton.setAttribute("data-lon", savedCities[i].lon);
+                newButton.setAttribute("data-lat", savedCitiesToDisplay[i].lat);
+                newButton.setAttribute("data-lon", savedCitiesToDisplay[i].lon);
                 // add to saved cities div
                 document.querySelector(".saved-cities").appendChild(newButton);
             };
@@ -274,10 +362,10 @@ var getSavedCities = function () {
     };
 };
 
-var checkSavedCities = function() {
+var checkSavedCities = function () {
     // add listener for clicking on recent search term
     if (document.querySelector("#saved-cities")) {
-        document.querySelector("#saved-cities").addEventListener("click",savedCitiesHandler);
+        document.querySelector("#saved-cities").addEventListener("click", savedCitiesHandler);
     };
 };
 
