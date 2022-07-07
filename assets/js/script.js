@@ -24,7 +24,7 @@ var searchButtonHandler = function (event) {
         return false;
     } else {
         // get latitude and longitude based on city name
-        fetch(directGeocodeUrl + cityName + "&limit=10&appid=" + apiKey)
+        fetch(directGeocodeUrl + cityName + "&limit=5&appid=" + apiKey)
             .then(function (response) {
                 if (response.ok) {
                     // if response is good, pull data needed for weather request
@@ -36,32 +36,53 @@ var searchButtonHandler = function (event) {
 
                             // create prompt options
                             for (i = 0; i < data.length; i++) {
+                                if (!data[i].state) {
+                                    promptText = promptText + "\n" + (i + 1) + " - " + data[i].country;
+                                } else {
                                     promptText = promptText + "\n" + (i + 1) + " - " + data[i].country + "-" + data[i].state;
+                                };
                             };
 
-                            var selectedIndex = prompt(promptText, "enter a number 1 - " + data.length) - 1;
+                            var selectedIndex = prompt(promptText) - 1;
                             // valideate response
-                            if (selectedIndex < 0 || selectedIndex > data.length) {
-                                alert("That is not one of the choices. Please try your search again.");
+                            if (!selectedIndex) {
+                                alert("That is not a valid selection. Please try your search again.")
                                 return false;
-                            } else if (!Number.isInteger(selectedIndex)) {
-                                alert("That is not one of the choices. Please try your search again.");
+                            } else if (!data[selectedIndex]) {
+                                alert("That is not a valid selection. Please try your search again.")
+                                return false;
                             } else {
-                            // get latitude and longitude of city using selected index
-                            cityName = data[selectedIndex].name;
-                            var latitude = data[selectedIndex].lat;
-                            var longitude = data[selectedIndex].lon;
-                            // get country and state
-                            var countryCode = data[selectedIndex].country;
-                            var stateCode = data[selectedIndex].state;
-
-                             // create object to store city info
-                            var cityObject = {  city: cityName,
-                                                lat: latitude,
-                                                lon: longitude,
-                                                country: countryCode,
-                                                state: stateCode };
+                                // create object to store city info
+                                if (data[selectedIndex].state) {
+                                    // if it has state data, include it
+                                    var cityObject = {
+                                        city: data[selectedIndex].name,
+                                        lat: data[selectedIndex].lat,
+                                        lon: data[selectedIndex].lon,
+                                        country: data[selectedIndex].country,
+                                        state: data[selectedIndex].state
+                                    };
+                                } else {
+                                    // if no state data, just store country
+                                    var cityObject = {
+                                        city: cityName,
+                                        lat: data[selectedIndex].lat,
+                                        lon: data[selectedIndex].lon,
+                                        country: data[selectedIndex].country
+                                    };
+                                };
                             };
+
+
+
+
+
+
+
+
+
+
+
 
                             // store city in recent search terms
                             storeCity(cityObject);
@@ -73,16 +94,13 @@ var searchButtonHandler = function (event) {
                             getWeather(cityObject);
 
                         } else if (data.length === 1) {
-                            // get latitude and longitude of city
-                            cityName = data[0].name;
-                            var latitude = data[0].lat;
-                            var longitude = data[0].lon;
-
                             // create object to store city info
-                                // no country info needed
-                            var cityObject = {  city: cityName,
-                                                lat: latitude,
-                                                lon: longitude, };
+                            var cityObject = {
+                                city: data[0].name,
+                                lat: data[0].lat,
+                                lon: data[0].lon,
+                                country: data[0].country
+                            };
 
                             // store city in recent search terms
                             storeCity(cityObject);
@@ -314,7 +332,7 @@ var getSavedCities = function () {
                             duplicateNames.push(i);
                         };
                         if (!duplicateNames.includes(j)) {
-                        duplicateNames.push(j);
+                            duplicateNames.push(j);
                         };
                     };
                 };
@@ -324,15 +342,26 @@ var getSavedCities = function () {
             var savedCitiesToDisplay = []
             for (i = 0; i < savedCities.length; i++) {
                 if (duplicateNames.includes(i)) {
-                    tempObject = {
-                        city: savedCities[i].city + ", " + savedCities[i].state,
-                        lat: savedCities[i].lat,
-                        lon: savedCities[i].lon,
-                        country: savedCities[i].country,
-                        state: savedCities[i].state
-                    };
-                
-                
+                    // check for state data
+                    if (savedCities[i.state]) {
+                        // if state data exists, create object with it
+                        tempObject = {
+                            city: savedCities[i].city + ", " + savedCities[i].state,
+                            lat: savedCities[i].lat,
+                            lon: savedCities[i].lon,
+                            country: savedCities[i].country,
+                            state: savedCities[i].state
+                        };
+                    } else {
+                        // if no state data, make object with country instead
+                        tempObject = {
+                            city: savedCities[i].city + ", " + savedCities[i].country,
+                            lat: savedCities[i].lat,
+                            lon: savedCities[i].lon,
+                            country: savedCities[i].country,
+                            state: savedCities[i].state
+                        };
+                    }
                     // add object to display array
                     savedCitiesToDisplay.push(tempObject);
                 } else {

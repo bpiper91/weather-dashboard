@@ -9,7 +9,7 @@ I was asked to build a webpage for planning trips that would allow users to sear
 
 ### Disambiguation
 
-One shortcoming of the initial development was that a search term like "London" would always return weather in London, England rather than London, Ontario, Canada. For most users, this would be fine, but I wanted a way to disambiguate search terms. To do so, I made the dashboard display the state and country info for up to 10 cities with shared names in a prompt windwo and allowed the user to choose from the list. If two cities with the same name appear in the list of recent search terms at the same time, their state/country will be automatically displayed to avoid confusion.
+One shortcoming of the initial development was that a search term like "London" would always return weather in London, England rather than London, Ontario, Canada. For most users, this would be fine, but I wanted a way to disambiguate search terms. To do so, I made the dashboard display the state and country info for cities with shared names in a prompt window and allowed the user to choose from the list. If two cities with the same name appear in the list of recent search terms at the same time, their state/country will be automatically displayed to avoid confusion.
 
 ![the dashboard with multiple similar search terms](./assets/images/screenshot2.JPG "recent searches disambiguated")
 *recent searches of Miami, London, and Toledo disambiguated*
