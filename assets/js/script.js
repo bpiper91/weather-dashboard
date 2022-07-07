@@ -343,7 +343,7 @@ var getSavedCities = function () {
             for (i = 0; i < savedCities.length; i++) {
                 if (duplicateNames.includes(i)) {
                     // check for state data
-                    if (savedCities[i.state]) {
+                    if (savedCities[i].state) {
                         // if state data exists, create object with it
                         tempObject = {
                             city: savedCities[i].city + ", " + savedCities[i].state,
