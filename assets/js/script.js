@@ -44,8 +44,9 @@ var searchButtonHandler = function (event) {
                             };
 
                             var selectedIndex = prompt(promptText) - 1;
+                            debugger;
                             // valideate response
-                            if (!selectedIndex) {
+                            if (selectedIndex === "") {
                                 alert("That is not a valid selection. Please try your search again.")
                                 return false;
                             } else if (!data[selectedIndex]) {
@@ -72,18 +73,6 @@ var searchButtonHandler = function (event) {
                                     };
                                 };
                             };
-
-
-
-
-
-
-
-
-
-
-
-
                             // store city in recent search terms
                             storeCity(cityObject);
 
@@ -343,10 +332,19 @@ var getSavedCities = function () {
             for (i = 0; i < savedCities.length; i++) {
                 if (duplicateNames.includes(i)) {
                     // check for state data
-                    if (savedCities[i].state) {
-                        // if state data exists, create object with it
+                    if (savedCities[i].state && savedCities[i].state.length < 15) {
+                        // if state name is short, create object with it
                         tempObject = {
                             city: savedCities[i].city + ", " + savedCities[i].state,
+                            lat: savedCities[i].lat,
+                            lon: savedCities[i].lon,
+                            country: savedCities[i].country,
+                            state: savedCities[i].state
+                        };
+                    } else if (savedCities[i].state && savedCities[i].state.length > 14) {
+                        // if state name is long, shorten and create object with it
+                        tempObject = {
+                            city: savedCities[i].city + ", " + savedCities[i].state.substr(0,12) + "...",
                             lat: savedCities[i].lat,
                             lon: savedCities[i].lon,
                             country: savedCities[i].country,
@@ -361,7 +359,7 @@ var getSavedCities = function () {
                             country: savedCities[i].country,
                             state: savedCities[i].state
                         };
-                    }
+                    };
                     // add object to display array
                     savedCitiesToDisplay.push(tempObject);
                 } else {
