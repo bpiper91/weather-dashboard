@@ -4,7 +4,7 @@ var inputElement = document.querySelector("#city-search");
 var resultsDiv = document.querySelector(".results");
 
 // API VARIABLES
-var apiKey = "2fe97bca221f6d95d8bfe21d3f54bbb1";
+var apiKey = config.API_KEY;
 var directGeocodeUrl = "https://api.openweathermap.org/geo/1.0/direct?q=";
 var weatherApiCall = "https://api.openweathermap.org/data/2.5/onecall?";
 var weatherIconUrl = "https://openweathermap.org/img/wn/"

@@ -14,6 +14,10 @@ One shortcoming of the initial development was that a search term like "London" 
 ![the dashboard with multiple similar search terms](./assets/images/screenshot2.JPG "recent searches disambiguated")
 *recent searches of Miami, London, and Toledo disambiguated*
 
+### Testing and Usage
+
+The API requests involved in the dashboard require an API key issued by OpenWeather. The Javascript references a variable "apiKey", which is set to "config.API_KEY". The file with that object is not in the GitHub repo.
+
 ## Contact
 
 Brett Piper - <bpiper91@gmail.com>
